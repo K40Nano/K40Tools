@@ -91,7 +91,7 @@ HomeK40
 
 Simple program sends "IPP" to the device, which homes the device.
 
-```
+```python
 from k40nano import NanoConnection
 
 with NanoConnection() as stream:
