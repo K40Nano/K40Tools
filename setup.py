@@ -15,7 +15,7 @@ setuptools.setup(
     description="K40 Tools",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/k40nano/k40tools",
+    url="https://github.com/K40Nano/K40Tools",
     packages=setuptools.find_packages(),
     classifiers=(
         "Programming Language :: Python :: 2",

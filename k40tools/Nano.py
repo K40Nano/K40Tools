@@ -6,7 +6,10 @@ import glob
 import sys
 import time
 
-from k40nano import *
+from k40nano import NanoPlotter, SvgPlotter, PngPlotter, FileWriteConnection, PrintConnection, MockUsb
+from .PngParser import parse_png
+from .EgvParser import parse_egv
+
 
 NANO_VERSION = "0.0.5"
 

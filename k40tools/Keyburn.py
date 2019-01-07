@@ -1,6 +1,6 @@
 from pynput import keyboard
 
-from k40nano.NanoPlotter import NanoPlotter
+from k40nano import NanoPlotter
 
 amount = 50
 down = False

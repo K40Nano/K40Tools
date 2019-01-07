@@ -1,3 +1,4 @@
 pyusb
 pynput
+k40nano
 
