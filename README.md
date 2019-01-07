@@ -24,8 +24,9 @@ Controls the K40 Laser Cutter with your keyboard.
 * Pressing `space` fires the laser.
 * Hitting `e` toggles the laser.
 * Number 1-9 set the speed in compact mode.
-    * Do not because this is default compact it doesn't send the packets until they are full, or you hit escape to finish.
-* Hitting 'escape' ends compact mode, if in compact mode. Or quits keyburn if not in compact mode.
+    * Do note because this is compact mode it doesn't send the packets until they are full, or you hit escape to finish. So it will seem weird.
+* Hitting `escape` ends compact mode, if in compact mode. Or quits keyburn if not in compact mode.
+* Hitting `home` homes the device.
 
 
 CLI (Command Line Interface)
