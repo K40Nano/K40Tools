@@ -3,63 +3,69 @@
 from PngRaster import PngRaster
 
 
-def is_on(sample, pass_index=0):
+def is_on(sample, pass_index):
     """
-    (Experimental)
-    Whether that pixel is on based on the pass number.
-    During pass zero the 8th bit is used. During pass one the 7th bit is used. etc.
-    Should allow greyscale images to turn into depth images.
-    Giving different bits for each pass.
-
+    Whether that pixel is white enough to zap this pass.
+    
     :param sample:
     :param pass_index: which pass is this.
     :return:
     """
-    return ((sample >> (7 - pass_index)) & 1) == 0
+    return sample < pass_index
 
 
 def parse_depth_png(png_file, plotter, spread=4, x=0, y=0):
-    if isinstance(png_file, str):
-        with open(png_file, "rb") as png_file:
-            parse_depth_png(png_file, plotter)
-            return
     increment = spread
-    step = spread
     on_count = 0
     off_count = 0
-    speeds = [20, 40, 80, 160]
-    for passes in range(0, len(speeds)):
+    print("Running Passes")
+    passes = 5
+    steps = 255 / (passes + 1)
+    for threshhold in range(255-steps, steps, -steps):
+        print("Burning samples brightness less than %d" % threshhold)
+        plotter.move_abs(x-1, y-1) # Little hamfisted, I didn't make an api correct way to set the directions.
         plotter.move_abs(x, y)
-        plotter.enter_compact_mode(speeds[passes])
-        for scanline in PngRaster.png_scanlines(png_file):
-            if increment < 0:
-                scanline = reversed(scanline)
-            for i in scanline:
-                if is_on(i):
-                    if off_count != 0:
-                        plotter.up()
-                        plotter.move(off_count, 0)
-                        off_count = 0
-                    on_count += increment
-                else:
-                    if on_count != 0:
-                        plotter.down()
-                        plotter.move(on_count, 0)
-                        on_count = 0
-                    off_count += increment
-            if off_count != 0:
+        plotter.enter_compact_mode(210,spread)
+        scanline_count = 0
+        with open(png_file,"rb") as png:
+            print("File Opened %s" % png_file)
+            for scanline in PngRaster.png_scanlines(png):
+                if increment < 0:
+                    scanline = reversed(scanline)
+                for i in scanline:
+                    if is_on(i,threshhold):
+                        if off_count != 0:
+                            plotter.up()
+                            plotter.move(off_count, 0)
+                            plotter.down()
+                            off_count = 0
+                        on_count += increment
+                    else:
+                        if on_count != 0:
+                            plotter.down()
+                            plotter.move(on_count,0)
+                            plotter.up()
+                            on_count = 0
+                        off_count += increment
+                if off_count != 0:
+                    plotter.up()
+                    plotter.move(off_count, 0)
+                    off_count = 0
+                if on_count != 0:
+                    plotter.down()
+                    plotter.move(on_count,0)
+                    on_count = 0
                 plotter.up()
-                plotter.move(off_count, 0)
-                off_count = 0
-            if on_count != 0:
-                plotter.down()
-                plotter.move(on_count, 0)
-                on_count = 0
-            plotter.up()
-            plotter.move(0, step)
-            increment = -increment
-        plotter.exit_compact_mode_break()
-
+                if increment > 0:
+                    plotter.move(1,0)
+                    plotter.move(-1,0)
+                else:
+                    plotter.move(-1,0)
+                    plotter.move(1,0)
+                #plotter.move(0, step)
+                increment = -increment
+        plotter.exit_compact_mode_finish()
+            
 
 if __name__ == "__main__":
     import sys
