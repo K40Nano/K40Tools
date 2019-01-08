@@ -218,3 +218,16 @@ def parse_egv(f, plotter):
                 pass
         elif cmd == b'@':  # reset
             is_resetting = True
+
+
+if __name__ == "__main__":
+    import sys
+
+    argv = sys.argv
+    from k40nano.NanoPlotter import NanoPlotter
+
+    if len(argv) >= 2:
+        filename = argv[1]
+        with NanoPlotter() as plotter:
+            plotter.enter_concat_mode()
+            parse_egv(filename, plotter)

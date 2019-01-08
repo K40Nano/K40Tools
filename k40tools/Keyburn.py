@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from pynput import keyboard
 
 from k40nano import NanoPlotter

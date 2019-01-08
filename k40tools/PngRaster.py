@@ -5,8 +5,6 @@ import zlib
 from math import ceil
 
 
-# MIT LICENSE
-
 class PngRaster:
     """
     Png Raster is a image reading and writing library that loads and save files into and out of PNG.

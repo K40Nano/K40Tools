@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from .PngRaster import PngRaster
+from PngRaster import PngRaster
 
 
 def is_on(sample):
@@ -54,3 +54,20 @@ def parse_png(png_file, plotter, spread=1):
         plotter.up()
         plotter.move(0, step)
         increment = -increment
+
+
+if __name__ == "__main__":
+    import sys
+
+    argv = sys.argv
+    from k40nano.NanoPlotter import NanoPlotter
+
+    filename = None
+    spread = 4
+    if len(argv) >= 2:
+        filename = argv[1]
+        if len(argv) >= 3:
+            spread = argv[2]
+        with NanoPlotter() as plotter:
+            plotter.enter_compact_mode(75)
+            parse_png(filename, plotter, spread)
