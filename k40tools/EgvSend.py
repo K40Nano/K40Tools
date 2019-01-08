@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from k40nano import NanoConnection
+from k40nano import NanoConnection, MockUsb
 
 
 def skip(read, byte, count):
