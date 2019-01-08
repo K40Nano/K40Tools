@@ -349,29 +349,29 @@ class Nano:
         value = self.v()
         if value is None:
             self.plotter = NanoPlotter()
-            self.log("NanoController")
+            self.log("NanoPlotter")
         else:
             value = str(value).lower()
             if value.endswith("svg"):
                 self.plotter = SvgPlotter(value)
                 self.plotter.open()
-                self.log("SvgController")
+                self.log("Svg Plotter")
             elif value.endswith("png"):
                 self.plotter = PngPlotter(open(value, "wb+"))
                 self.plotter.open()
-                self.log("PngController")
+                self.log("Png Plotter")
             elif value.endswith("egv"):
-                self.plotter = NanoPlotter()
-                self.plotter.open(connect=FileWriteConnection(value))
-                self.log("EgvNanoController")
+                self.plotter = NanoPlotter(connection=FileWriteConnection(value))
+                self.plotter.open()
+                self.log("Egv NanoPlotter")
             elif value == "print":
-                self.plotter = NanoPlotter()
-                self.plotter.open(connect=PrintConnection())
-                self.log("PrintNanoController")
+                self.plotter = NanoPlotter(connection=PrintConnection())
+                self.plotter.open()
+                self.log("Print NanoPlotter")
             elif value == "mock":
-                self.plotter = NanoPlotter()
-                self.plotter.open(usb=MockUsb())
-                self.log("MockUsb NanoController")
+                self.plotter = NanoPlotter(usb=MockUsb())
+                self.plotter.open()
+                self.log("MockUsb NanoPlotter")
         return values
 
     def command_quiet(self, values):
