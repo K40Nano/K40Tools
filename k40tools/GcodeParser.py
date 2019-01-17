@@ -75,10 +75,10 @@ def parse_gcode(f, plotter, properties=None):
     flip_x = 1  # Assumes the GCode is flip_x, -1 is flip, 1 is normal
     flip_y = -1  # Assumes the Gcode is flip_y,  -1 is flip, 1 is normal
     absolute_mode = True  # G21 DEFAULT
-    scale = 25.4  # Initially assume mm mode G20. 25.4 mils in an mm. G20 DEFAULT
-    feed_scale = (1.0 / 25.4) * (1.0 / 60.0)  # inches to mm, seconds to minutes. G94 DEFAULT
+    scale = 39.3701  # Initially assume mm mode G20. 25.4 mils in an mm. G20 DEFAULT
+    feed_scale = (scale / 39.3701) * (1.0 / 60.0)  # G94 DEFAULT, mm mode
     is_down = False
-    feed_rate = 1000 * feed_scale
+    feed_rate = 70
     for gc in parse(f):
         if 'comment' in gc:
             comment = gc['comment']
@@ -120,7 +120,7 @@ def parse_gcode(f, plotter, properties=None):
             elif gc['g'] == 28.0:
                 plotter.home()
             elif gc['g'] == 21.0 or gc['g'] == 71.0:
-                scale = 25.4  # g20 is mm mode. 25.4 mils in a mm
+                scale = 39.3701  # g20 is mm mode. 39.3701 mils in a mm
             elif gc['g'] == 20.0 or gc['g'] == 70.0:
                 scale = 1000.0  # g20 is inch mode. 1000 mils in an inch
             elif gc['g'] == 90.0:
@@ -128,8 +128,8 @@ def parse_gcode(f, plotter, properties=None):
             elif gc['g'] == 91.0:
                 absolute_mode = False
             elif gc['g'] == 94.0:
-                # Feed Rate in Inches / Minute
-                feed_scale = (1.0 / 25.4) * (1.0 / 60.0)  # inches to mm, seconds to minutes.
+                # Feed Rate in Units / Minute
+                feed_scale = (scale / 39.3701) * (1.0 / 60.0)  # units to mm, seconds to minutes.
         if 'm' in gc:
             v = gc['m']
             if v == 30:
