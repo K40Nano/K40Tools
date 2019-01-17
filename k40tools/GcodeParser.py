@@ -79,46 +79,25 @@ def parse_gcode(f, plotter, properties=None):
     feed_scale = (scale / 39.3701) * (1.0 / 60.0)  # G94 DEFAULT, mm mode
     is_down = False
     feed_rate = 70
+    move_mode = 0
+    x = 0
+    y = 0
     for gc in parse(f):
         if 'comment' in gc:
             comment = gc['comment']
             pass
+        if 'f' in gc:
+            v = gc['f']
+            feed_rate = feed_scale * v
         if 'g' in gc:
             if gc['g'] == 0.0:
-                plotter.up()
-                plotter.exit_compact_mode_reset()
-                if 'x' in gc:
-                    x = gc['x'] * scale * flip_x
-                else:
-                    x = 0
-
-                if 'y' in gc:
-                    y = gc['y'] * scale * flip_y
-                else:
-                    y = 0
-                if absolute_mode:
-                    plotter.move_abs(int(round(x)), int(round(y)))
-                else:
-                    plotter.move(int(round(x)), int(round(y)))
+                move_mode = 0
             elif gc['g'] == 1.0:
-                if not is_down:
-                    plotter.down()
-                plotter.enter_compact_mode(feed_rate)
-                if 'x' in gc:
-                    x = gc['x'] * scale * flip_x
-                else:
-                    x = 0
-
-                if 'y' in gc:
-                    y = gc['y'] * scale * flip_y
-                else:
-                    y = 0
-                if absolute_mode:
-                    plotter.move_abs(int(round(x)), int(round(y)))
-                else:
-                    plotter.move(int(round(x)), int(round(y)))
+                move_mode = 1
             elif gc['g'] == 28.0:
                 plotter.home()
+                x = 0
+                y = 0
             elif gc['g'] == 21.0 or gc['g'] == 71.0:
                 scale = 39.3701  # g20 is mm mode. 39.3701 mils in a mm
             elif gc['g'] == 20.0 or gc['g'] == 70.0:
@@ -140,9 +119,29 @@ def parse_gcode(f, plotter, properties=None):
             elif v == 5:
                 plotter.up()
                 is_down = False
-        if 'f' in gc:
-            v = gc['f']
-            feed_rate = feed_scale * v
+        if 'x' in gc or 'y' in gc:
+            if move_mode == 0:
+                plotter.up()
+                plotter.exit_compact_mode_reset()
+            elif move_mode == 1:
+                if not is_down:
+                    plotter.down()
+                plotter.enter_compact_mode(feed_rate)
+            if 'x' in gc:
+                x = gc['x'] * scale * flip_x
+            else:
+                if not absolute_mode:
+                    x = 0
+            if 'y' in gc:
+                y = gc['y'] * scale * flip_y
+            else:
+                if not absolute_mode:
+                    y = 0
+                # In non-absolute mode, y from last move will be maintained.
+            if absolute_mode:
+                plotter.move_abs(int(round(x)), int(round(y)))
+            else:
+                plotter.move(int(round(x)), int(round(y)))
 
 
 if __name__ == "__main__":
