@@ -7,9 +7,10 @@ import sys
 import time
 
 from k40nano import NanoPlotter, SvgPlotter, PngPlotter, FileWriteConnection, PrintConnection, MockUsb
-from PngParser import parse_png
-from EgvParser import parse_egv
 
+from EgvParser import parse_egv
+from GcodeParser import parse_gcode
+from PngParser import parse_png
 
 NANO_VERSION = "0.0.5"
 
@@ -24,6 +25,7 @@ class NanoCommand:
         self.input_file = None
         self.command = None
         self.speed = None
+        self.settings = {}
 
 
 class Nano:
@@ -103,12 +105,23 @@ class Nano:
     def command_input(self, values):
         v = self.v()
         input_files = glob.glob(v)
+        properties = {}
+        while True:
+            key = self.v()
+            if key is None:
+                break
+            value = self.v()
+            if value is None:
+                break
+            properties[key] = value
         for input_file in input_files:
             m = NanoCommand()
             m.title = "File:" + input_file
             self.log(m.title)
             m.input_file = input_file
+            m.settings = properties
             values.append(m)
+
         return values
 
     @staticmethod
@@ -290,12 +303,18 @@ class Nano:
                 self.speed = new_speed
             if value.input_file is not None:
                 fname = str(value.input_file).lower()
-                if fname.endswith("egv"):
+                if fname.endswith(".egv"):
                     plotter = self.get_plotter()
-                    parse_egv(value.input_file, plotter)
-                elif fname.endswith("png"):
+                    print(value.settings)
+                    parse_egv(value.input_file, plotter, value.settings)
+                elif fname.endswith(".png"):
                     plotter = self.get_plotter()
-                    parse_png(value.input_file, plotter)
+                    print(value.settings)
+                    parse_png(value.input_file, plotter, value.settings)
+                elif fname.endswith(".gcode") or fname.endswith(".nc"):
+                    plotter = self.get_plotter()
+                    print(value.settings)
+                    parse_gcode(value.input_file, plotter, value.settings)
             if value.command is not None:
                 value.command()
         return []
@@ -387,5 +406,6 @@ class Nano:
 
 
 argv = sys.argv
+argv = "-i ..\\venushead.nc -o gcode.png".split(" ")
 nano = Nano(argv)
 nano.execute()

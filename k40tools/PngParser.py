@@ -138,7 +138,55 @@ def is_on(sample, threshold):
     return sample_value < threshold
 
 
-def parse_png(png_file, plotter, spread=1, passes=1, speed=210, x=0, y=0):
+def perform_pass(png_file, plotter, spread=1, threshold=128, x=0, y=0):
+    on_count = 0
+    off_count = 0
+    print("Running Passes")
+    print("Burning samples brightness less than %d" % threshold)
+
+    with open(png_file, "rb") as png:
+        print("File Opened %s" % png_file)
+        increment = spread
+        for scanline in png_scanlines(png):
+            if increment < 0:
+                scanline = reversed(scanline)
+            for i in scanline:
+                if is_on(i, threshold):
+                    if off_count != 0:
+                        plotter.up()
+                        plotter.move(off_count, 0)
+                        off_count = 0
+                    on_count += increment
+                else:
+                    if on_count != 0:
+                        plotter.down()
+                        plotter.move(on_count, 0)
+                        on_count = 0
+                    off_count += increment
+            if off_count != 0:
+                plotter.up()
+                plotter.move(off_count, 0)
+                off_count = 0
+            if on_count != 0:
+                plotter.down()
+                plotter.move(on_count, 0)
+                on_count = 0
+            plotter.up()
+            if not plotter.h_switch():
+                plotter.move(0, spread)
+            increment = -increment
+    plotter.exit_compact_mode_break()
+    plotter.move_abs(x, y)
+
+
+def parse_png(png_file, plotter, properties=None, spread=1, passes=1, speed=210, x=0, y=0):
+    if properties is not None and 'slice' in properties:
+        threshold = int(properties['slice'])
+        plotter.move_abs(x - 1, y - 1)
+        plotter.move_abs(x, y)
+        plotter.enter_compact_mode(speed, spread)
+        perform_pass(png_file, plotter, spread, threshold, x, y)
+        return
     on_count = 0
     off_count = 0
     print("Running Passes")

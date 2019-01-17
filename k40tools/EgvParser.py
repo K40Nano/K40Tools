@@ -71,7 +71,7 @@ class EgvParser:
         self.distance += amount
 
 
-def parse_egv(f, plotter):
+def parse_egv(f, plotter, properties=None):
     egv_parser = EgvParser()
     if isinstance(f, str):
         with open(f, "rb") as f:
