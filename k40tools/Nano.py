@@ -406,6 +406,5 @@ class Nano:
 
 
 argv = sys.argv
-argv = "-i ..\\venushead.nc -o gcode.png".split(" ")
 nano = Nano(argv)
 nano.execute()
