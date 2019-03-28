@@ -1,6 +1,7 @@
 # K40Tools
 Tools for the K40 Laser Cutter using K40Nano API
 
+While these tools clearly function and do useful things their primary purpose is to show what the API can be used for, and inspire additional projects using the K40Nano API.
 
 # Code Examples
 
@@ -11,7 +12,9 @@ There are two premade parser classes these take a filename or fileobject and a p
 
 `parse_png` within the `PngParser` class parses a png file scanline by scanline and plots that information. It does this by reading the PNG directly, and making plotter calls while reading the file. There's very little memory footprint and even a tiny device can process a huge file without delay.
 
-`parse_egv` within the `EgvParser` class reads the egv file and plots that data. The `NanoPlotter` would then turn these commands back into .egv data and send that to the laser. In the parser the .EGV files do not have any special priority. They are simply treated as containing vector data. This allows the `NanoPlotter` to optimize some things. If we wanted to just send the EGV data as is, we would use the a NanoConnection ourselves and feed the EGV data in, and then call `wait()` on the NanoConnection (with the assumption the EGV data has the F command in it already). 
+`parse_egv` within the `EgvParser` class reads the egv file and plots that data. The `NanoPlotter` would then turn these commands back into .egv data and send that to the laser. In the parser the .EGV files do not have any special priority. They are simply treated as containing vector data. This allows the `NanoPlotter` to optimize some things. If we wanted to just send the EGV data as is, we would use the a NanoConnection ourselves and feed the EGV data in, and then call `wait()` on the NanoConnection (with the assumption the EGV data has the F command in it already). There is an `EgvSend` utility that does exactly this.
+
+`parse_gcode` within the `GCcodeParser` class can read many common gcode interpretations for laser devices. It should handle F, G0, G1, G28, G21, G71, G20, G70, G90, G91, G94, M3/M4, M5, M30, X, Y.
 
 Several other parsers could be added along these same lines. Load a file, interact with the API based on what the file says. But these should not be assumed to be a limit to the utility. If you wanted to, for example, rig up joystick to control the K40, you could do that with a few lines of code and the API, parsers are only a typical uses case example.
 
@@ -86,6 +89,11 @@ Nano `-r -m 2000 2000 -e -i *.EGV -m 750 0 -p 5 -m -3750 750 -p 5`
 * -p 5: duplicates stack 5 times. (files, move command, files, move command, files, move command, files, move command, files, move command, move to next row position)
 * (default -e) executes stack.
 
+Remi Controller
+---
+The `remi_controller.py` tool uses REMI to make a quick remote interface to control most of the aspects of the K40 device, at least as far as moving it around and locking and unlocking the rail and homing the device. Based on Jonathan Diamond's impressive suggestion of making a webinterface via REMI ( https://github.com/dddomodossola/remi ) (see Jonathan's project here: https://github.com/axlan/K40WebServer). I hooked up the basic elements and made a straightforward webinterface for a K40 device. One could, if they were so inclined, remake most of Whisperer from such interface builder.
+
+![remi_controller](https://user-images.githubusercontent.com/3302478/55131531-342e7d80-50dc-11e9-99f3-10b52760f229.png)
 
 HomeK40
 ---
