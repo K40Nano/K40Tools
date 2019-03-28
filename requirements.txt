@@ -1,4 +1,5 @@
 pyusb
 pynput
+remi
 k40nano
 
